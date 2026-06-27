@@ -141,10 +141,11 @@
     .bg__canvas--nav { position: absolute; top: 0; left: 0; }
     .nav__inner {
       display: flex; align-items: baseline; justify-content: space-between;
+      gap: 16px;
       height: 62px;
       position: relative; z-index: 1;
     }
-    @media (max-width: 768px) { .nav__inner { height: 68px; } }
+    @media (max-width: 768px) { .nav__inner { height: 64px; } }
     .nav__logo {
       font-family: var(--display); font-weight: 700; font-size: 23px;
       letter-spacing: -0.02em;
@@ -155,9 +156,9 @@
       align-self: flex-end; transform: translateY(8px);
     }
     .nav__logo-text { transform: translateY(8px); }
-    .nav__links { display: flex; gap: 34px; list-style: none; }
+    .nav__links { display: flex; gap: 28px; list-style: none; }
     .nav__link {
-      font-size: 14px; color: var(--text-dim); font-weight: 400;
+      font-size: 15px; color: var(--text-dim); font-weight: 600;
       letter-spacing: 0.01em; position: relative;
       transition: color 0.25s ease;
     }
@@ -168,6 +169,15 @@
     }
     .nav__link:hover { color: var(--text); }
     .nav__link:hover::after { transform: scaleX(1); }
+
+    /* Tighten the bar on phones so the logo + link pill don't crowd */
+    @media (max-width: 600px) {
+      .container { width: min(1080px, 100% - 32px); }
+      .nav__logo { font-size: 19px; gap: 8px; }
+      .nav__logo img { height: 32px; transform: translateY(7px); }
+      .nav__links { gap: 16px; }
+      .nav__link { font-size: 13.5px; letter-spacing: 0; }
+    }
 
     /* --- Buttons / links --- */
     .btn {
@@ -414,7 +424,7 @@
             <li><a href="#contact">Contact</a></li>
           </ul>
         </div>
-        <p class="footer__copy">&copy; 2026 Catalyst Program. Example footer text.</p>
+        <p class="footer__copy">&copy; 2026 Catalyst Program. Example footer text. &middot; <span id="particleCount">0</span> particles.</p>
       </div>
     </footer>
   </div>
@@ -497,7 +507,11 @@
     for (let i = 0; i < startCount; i++) addParticle()
 
     const countEl = document.getElementById('count')
-    function updateCount() { countEl.textContent = count + ' particles' }
+    const footerCountEl = document.getElementById('particleCount')
+    function updateCount() {
+      countEl.textContent = count + ' particles'
+      if (footerCountEl) footerCountEl.textContent = count
+    }
     updateCount()
 
     window.addEventListener('contextmenu', e => e.preventDefault())
