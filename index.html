@@ -122,16 +122,35 @@
     /* --- Nav --- */
     .nav {
       position: sticky; top: 0; z-index: 40; padding-top: 18px;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s ease;
     }
+    .nav.is-scrolled { border-bottom-color: var(--line); }
+    /* Clipped, in-sync copy of the background so the bar reveals the
+       gradient + particles while masking the page text behind it. */
+    .nav__bg {
+      position: absolute; inset: 0; overflow: hidden; z-index: 0;
+      opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
+    }
+    .nav.is-scrolled .nav__bg { opacity: 1; }
+    .bg--nav { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; }
+    .bg__canvas--nav { position: absolute; top: 0; left: 0; }
     .nav__inner {
       display: flex; align-items: baseline; justify-content: space-between;
-      height: 76px;
+      height: 62px;
+      position: relative; z-index: 1;
     }
+    @media (max-width: 768px) { .nav__inner { height: 68px; } }
     .nav__logo {
-      font-family: var(--display); font-weight: 700; font-size: 20px;
+      font-family: var(--display); font-weight: 700; font-size: 23px;
       letter-spacing: -0.02em;
+      display: inline-flex; align-items: baseline; gap: 10px;
     }
-    .nav__logo span { color: var(--teal); }
+    .nav__logo img {
+      height: 38px; width: auto; display: block;
+      align-self: flex-end; transform: translateY(8px);
+    }
+    .nav__logo-text { transform: translateY(8px); }
     .nav__links { display: flex; gap: 34px; list-style: none; }
     .nav__link {
       font-size: 14px; color: var(--text-dim); font-weight: 400;
@@ -279,8 +298,17 @@
   <!-- ===== Content ===== -->
   <div class="content">
     <nav class="nav">
+      <div class="nav__bg" aria-hidden="true">
+        <div class="bg bg--nav">
+          <div class="bg__orb bg__orb--1"></div>
+          <div class="bg__orb bg__orb--2"></div>
+          <div class="bg__orb bg__orb--3"></div>
+          <div class="bg__noise"></div>
+        </div>
+        <canvas class="bg__canvas bg__canvas--nav" id="navParticles"></canvas>
+      </div>
       <div class="container nav__inner">
-        <a href="#top" class="nav__logo">Catalyst<span>.</span></a>
+        <a href="#top" class="nav__logo"><img src="cat.png" alt="Catalyst cat logo" /><span class="nav__logo-text">Catalyst</span></a>
         <ul class="nav__links">
           <li><a href="#about" class="nav__link">About</a></li>
           <li><a href="#programs" class="nav__link">Programs</a></li>
@@ -387,10 +415,28 @@
     </footer>
   </div>
 
+  <!-- ===== Solidify nav once page text would scroll beneath it ===== -->
+  <script>
+    (function () {
+      const nav = document.querySelector('.nav')
+      const firstText = document.querySelector('.hero__title')
+      let trigger = 0
+      function calc() {
+        trigger = Math.max(0, firstText.getBoundingClientRect().top + window.scrollY - nav.offsetHeight - 8)
+      }
+      function onScroll() { nav.classList.toggle('is-scrolled', window.scrollY > trigger) }
+      calc(); onScroll()
+      window.addEventListener('scroll', onScroll, { passive: true })
+      window.addEventListener('resize', () => { calc(); onScroll() })
+    })()
+  </script>
+
   <!-- ===== Particle field script (copied verbatim from the demo) ===== -->
   <script>
     const canvas = document.getElementById('particles')
     const ctx = canvas.getContext('2d')
+    const navCanvas = document.getElementById('navParticles')
+    const navCtx = navCanvas.getContext('2d')
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
     let isMobile = window.innerWidth <= 768
     let scale = Math.min(1, Math.max(0.5, Math.min(window.innerWidth, window.innerHeight) / 1000))
@@ -411,6 +457,10 @@
       canvas.style.width = window.innerWidth + 'px'
       canvas.style.height = window.innerHeight + 'px'
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      navCanvas.width = canvas.width
+      navCanvas.height = canvas.height
+      navCanvas.style.width = window.innerWidth + 'px'
+      navCanvas.style.height = window.innerHeight + 'px'
     }
     resize()
     window.addEventListener('resize', () => {
@@ -581,9 +631,17 @@
       }
       ctx.fillStyle = 'rgba(20,184,166,0.45)'; ctx.fill()
 
+      // Mirror the particle layer into the nav's clipped copy (1:1 device pixels)
+      navCtx.clearRect(0, 0, navCanvas.width, navCanvas.height)
+      navCtx.drawImage(canvas, 0, 0)
+
       requestAnimationFrame(animate)
     }
     requestAnimationFrame(animate)
   </script>
+
+  <!-- Analytics -->
+  <script data-goatcounter="https://catalyst-program.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
