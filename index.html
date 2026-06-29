@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Catalyst Program</title>
   <meta name="description" content="The Catalyst Program — bringing together ambitious students to build projects that matter." />
-  <link rel="icon" href="favicon.ico?v=3" sizes="any" />
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=3" />
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=3" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=3" />
+  <link rel="icon" href="favicon.ico?v=4" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=4" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=4" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=4" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -255,29 +255,47 @@
     .card h3 { font-size: 19px; font-weight: 600; margin-bottom: 10px; letter-spacing: -0.01em; }
     .card p { color: var(--text-dim); font-size: 15px; }
 
-    /* --- Pull quote --- */
-    .quote { padding: 120px 0; border-top: 1px solid var(--line); }
-    .quote p {
-      font-family: var(--display); font-size: clamp(24px, 3.6vw, 36px);
-      font-weight: 600; letter-spacing: -0.02em; max-width: 20ch; line-height: 1.25;
+    /* --- Process steps (numbered list) --- */
+    .process { list-style: none; margin: 0; padding: 0; }
+    .process__step {
+      display: grid; grid-template-columns: 64px 1fr; gap: 28px;
+      padding: 22px 0; align-items: start;
     }
-    .quote p::before { content: ''; }
-    .quote span { display: block; margin-top: 28px; color: var(--text-dim); font-size: 15px; letter-spacing: 0.02em; }
+    .process__num {
+      font-family: var(--display); font-size: 26px; font-weight: 700;
+      color: var(--teal); font-variant-numeric: tabular-nums; line-height: 1;
+    }
+    .process__body h3 { font-size: 21px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 10px; }
+    .process__body p { color: var(--text-dim); font-size: 16px; max-width: 68ch; }
+    @media (max-width: 600px) {
+      .process__step { grid-template-columns: 40px 1fr; gap: 16px; padding: 26px 0; }
+      .process__num { font-size: 22px; }
+    }
 
-    /* --- About split --- */
+    /* --- Team --- */
+    .team__grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px 48px;
+    }
+    .team__name {
+      font-family: var(--display); font-size: 22px; font-weight: 700;
+      letter-spacing: -0.02em; color: var(--text); display: inline-block;
+    }
+    a.team__name {
+      background-image: linear-gradient(var(--teal), var(--teal));
+      background-size: 0% 1px; background-position: 0 100%; background-repeat: no-repeat;
+      padding-bottom: 3px; transition: color 0.2s ease, background-size 0.25s ease;
+    }
+    a.team__name:hover { color: var(--teal); background-size: 100% 1px; }
+    .team__role { color: var(--text-dim); font-size: 14px; margin-top: 7px; }
+
+    /* --- About --- */
     .section--about { padding-top: 120px; }
-    .about { display: grid; grid-template-columns: 1fr 0.85fr; gap: 64px; align-items: start; }
-    @media (max-width: 820px) { .about { grid-template-columns: 1fr; gap: 40px; } }
     .about h2 {
       font-family: var(--display); font-size: clamp(28px, 4vw, 40px);
       font-weight: 700; letter-spacing: -0.025em; line-height: 1.12; margin-bottom: 24px;
     }
-    .about p { color: var(--text-dim); margin-bottom: 18px; max-width: 44ch; }
-    .about__visual {
-      aspect-ratio: 3 / 4; display: flex; align-items: flex-end;
-      border: 1px solid var(--line); border-radius: 2px;
-      color: var(--text-dim); font-size: 13px; letter-spacing: 0.04em; padding: 20px;
-    }
+    .about p { color: var(--text-dim); margin-bottom: 18px; max-width: 64ch; }
 
     /* --- CTA / Contact --- */
     .cta { padding: 130px 0; border-top: 1px solid var(--line); }
@@ -325,8 +343,8 @@
         <a href="#top" class="nav__logo"><img src="cat.png" alt="Catalyst cat logo" /><span class="nav__logo-text">Catalyst</span></a>
         <ul class="nav__links">
           <li><a href="#about" class="nav__link">About</a></li>
-          <li><a href="#programs" class="nav__link">Programs</a></li>
-          <li><a href="#contact" class="nav__link">Contact</a></li>
+          <li><a href="#process" class="nav__link">Process</a></li>
+          <li><a href="#team" class="nav__link">Team</a></li>
         </ul>
       </div>
     </nav>
@@ -335,81 +353,112 @@
       <div class="container">
         <h1 class="hero__title">The Catalyst Program</h1>
         <p class="hero__subtitle">
-          We bring together ambitious students from universities across the country to
-          collaborate on projects that matter. This is example copy — replace it with your
-          own story.
+          We bring students and mentors together to produce high-impact work.
         </p>
         <div class="hero__actions">
-          <a href="#contact" class="btn btn--primary">Get started</a>
-          <a href="#about" class="link-arrow">Learn more
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </a>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSeHTIPZu2zmbi4SgdJRsAGxy1ymuOg5B0wUu5-4gWow4ng-Ww/viewform?usp=sharing&amp;ouid=113259978758331280098" target="_blank" rel="noopener noreferrer" class="btn btn--primary">Express Interest</a>
         </div>
       </div>
     </header>
 
     <section class="section section--about" id="about">
       <div class="container about">
-        <div>
-          <span class="eyebrow">About</span>
-          <h2>A community that turns ideas into impact.</h2>
-          <p>
-            The Catalyst Program is built on a simple belief: students are capable of
-            extraordinary things when given the right environment, resources, and community.
-            (Example text — swap in your real mission.)
-          </p>
-          <p>
-            We connect students from across the country to work on projects that challenge
-            conventional thinking and create real-world impact.
-          </p>
-        </div>
-        <div class="about__visual">Image / video placeholder</div>
+        <span class="eyebrow">About</span>
+        <h2>Turning ideas and drive into impact</h2>
+        <p>
+          We run a 10 week program where groups of students work with a mentor in one of
+          several high impact cause areas. Projects can be in AI safety (technical and
+          governance), global health and development, biosecurity, or animal welfare.
+        </p>
+        <p>
+          Students will get the chance to build the skills and knowledge they’ll need for an
+          impactful career. Mentors will get the capacity to explore more ideas and the
+          opportunity to develop and guide future talent.
+        </p>
       </div>
     </section>
 
-    <section class="section" id="programs">
+    <section class="section" id="process">
       <div class="container">
         <div class="section__header">
-          <span class="eyebrow">What we offer</span>
-          <h2 class="section__title">A platform for meaningful work</h2>
-          <p class="section__desc">
-            Example sections you can rename, reorder, or remove. Each entry is a placeholder.
-          </p>
+          <span class="eyebrow">How it works</span>
+          <h2 class="section__title">Our process</h2>
         </div>
-        <div class="grid">
-          <article class="card">
-            <div class="card__num">01</div>
-            <h3>Collaborative teams</h3>
-            <p>Work alongside peers from top universities on interdisciplinary projects.</p>
-          </article>
-          <article class="card">
-            <div class="card__num">02</div>
-            <h3>Expert mentorship</h3>
-            <p>Get guidance from experienced professionals who help you navigate hard problems.</p>
-          </article>
-          <article class="card">
-            <div class="card__num">03</div>
-            <h3>Real impact</h3>
-            <p>Our projects address genuine challenges — your work here makes a difference.</p>
-          </article>
-        </div>
+        <ol class="process">
+          <li class="process__step">
+            <div class="process__num">01</div>
+            <div class="process__body">
+              <h3>Applications</h3>
+              <p>
+                Students can apply starting in August. The application will allow you to
+                select what projects you would be most interested in working on, and may
+                include additional assessments based on your selections.
+              </p>
+            </div>
+          </li>
+          <li class="process__step">
+            <div class="process__num">02</div>
+            <div class="process__body">
+              <h3>Kickoff</h3>
+              <p>
+                Successful applicants will be put into groups with their mentor, an experienced
+                student or professional working in one of our cause areas. The students will
+                meet with their mentor at least once a week, and will work towards a
+                predetermined deliverable. Along the way, students will improve their problem
+                solving abilities and knowledge of their cause area.
+              </p>
+            </div>
+          </li>
+          <li class="process__step">
+            <div class="process__num">03</div>
+            <div class="process__body">
+              <h3>Wrap up and extension</h3>
+              <p>
+                If possible, students will publicly publish their deliverable and reflect on
+                their project with their mentor. In some cases, the project could be extended
+                at the discretion of the mentor.
+              </p>
+            </div>
+          </li>
+          <li class="process__step">
+            <div class="process__num">04</div>
+            <div class="process__body">
+              <h3>Onward and upward</h3>
+              <p>
+                With the completion of their project, students will have gained legible
+                experience and skills. This will help them as they work to obtain other
+                opportunities, and give them a better sense of how they are best suited to
+                make an impact.
+              </p>
+            </div>
+          </li>
+        </ol>
       </div>
     </section>
 
-    <section class="quote">
+    <section class="section" id="team">
       <div class="container">
-        <p>The best way to predict the future is to create it — and we believe in creating it together.</p>
-        <span>— The Catalyst Team</span>
-      </div>
-    </section>
-
-    <section class="cta" id="contact">
-      <div class="container">
-        <div class="cta__box">
-          <span class="eyebrow">Get in touch</span>
-          <h2>Ready to build something?</h2>
-          <p>This is a placeholder call-to-action. Point the button at an application form, email, or signup.</p>
-          <a href="mailto:hello@example.com" class="btn btn--primary">Get in touch</a>
+        <div class="section__header">
+          <span class="eyebrow">Team</span>
+          <h2 class="section__title">Our organizers</h2>
+        </div>
+        <div class="team__grid">
+          <div class="team__member">
+            <a class="team__name" href="https://www.linkedin.com/in/brian-foerster-919a66323/" target="_blank" rel="noopener noreferrer">Brian Foerster</a>
+            <p class="team__role">Co-President, EA Purdue</p>
+          </div>
+          <div class="team__member">
+            <span class="team__name">Jeremy Pan</span>
+            <p class="team__role">Co-Organizer, EA Berkeley</p>
+          </div>
+          <div class="team__member">
+            <a class="team__name" href="https://www.linkedin.com/in/madeleine-hoffman-a35b06339/" target="_blank" rel="noopener noreferrer">Madeleine Hoffman</a>
+            <p class="team__role">Co-President, UChicago EA</p>
+          </div>
+          <div class="team__member">
+            <a class="team__name" href="https://www.linkedin.com/in/ian-habich-ramirez-0880aa240/" target="_blank" rel="noopener noreferrer">Ian Habich Ramirez</a>
+            <p class="team__role">Co-Organizer, EA Berkeley</p>
+          </div>
         </div>
       </div>
     </section>
@@ -420,11 +469,11 @@
           <div class="footer__brand">Catalyst</div>
           <ul class="footer__links">
             <li><a href="#about">About</a></li>
-            <li><a href="#programs">Programs</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="#process">Process</a></li>
+            <li><a href="#team">Team</a></li>
           </ul>
         </div>
-        <p class="footer__copy">&copy; 2026 Catalyst Program. Example footer text. &middot; <span id="particleCount">0</span> particles.</p>
+        <p class="footer__copy">&copy; 2026 Catalyst Program. &middot; <span id="particleCount">0</span> particles.</p>
       </div>
     </footer>
   </div>
