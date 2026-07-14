@@ -51,30 +51,34 @@
 
     .bg__canvas { position: fixed; top: 0; left: 0; z-index: 1; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
 
+    /* No blur filter here: an 80px blur re-rasterizes these layers every
+       animation frame and saturates integrated GPUs. Each glow is a
+       pre-dithered PNG sprite — CSS gradients band visibly at these
+       opacities on some renderers (Edge), baked-in noise doesn't. */
     .bg__orb {
       position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
       will-change: transform;
     }
 
     .bg__orb--1 {
       width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(20,184,166,0.25) 0%, transparent 70%);
+      background-image: url('orb-1.png');
       top: -15%; right: -10%;
       animation: orbit1 30s ease-in-out infinite;
     }
 
     .bg__orb--2 {
       width: 450px; height: 450px;
-      background: radial-gradient(circle, rgba(13,148,136,0.2) 0%, transparent 70%);
+      background-image: url('orb-2.png');
       bottom: -10%; left: -8%;
       animation: orbit2 25s ease-in-out infinite;
     }
 
     .bg__orb--3 {
       width: 350px; height: 350px;
-      background: radial-gradient(circle, rgba(20,184,166,0.15) 0%, transparent 70%);
+      background-image: url('orb-3.png');
       top: 40%; left: 50%;
       animation: orbit3 35s ease-in-out infinite;
     }
@@ -103,9 +107,10 @@
     .bg__noise {
       position: absolute;
       inset: 0;
-      opacity: 0.035;
+      opacity: 0.025; /* subtle film grain; orb dithering is baked into the sprites */
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-      mix-blend-mode: overlay;
+      /* normal blending: overlay blend forced a full-viewport recomposite
+         every frame over the animating orbs; invisible difference at 3.5% */
       pointer-events: none;
     }
 
@@ -113,6 +118,10 @@
 
     @media (max-width: 768px) {
       .bg__orb--3 { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bg__orb { animation: none; }
     }
 
     /* ============================================================
@@ -488,7 +497,11 @@
       function calc() {
         trigger = Math.max(0, firstText.getBoundingClientRect().top + window.scrollY - nav.offsetHeight - 8)
       }
-      function onScroll() { nav.classList.toggle('is-scrolled', window.scrollY > trigger) }
+      function onScroll() {
+        const on = window.scrollY > trigger
+        nav.classList.toggle('is-scrolled', on)
+        window.__navBgVisible = on
+      }
       calc(); onScroll()
       window.addEventListener('scroll', onScroll, { passive: true })
       window.addEventListener('resize', () => { calc(); onScroll() })
@@ -699,9 +712,12 @@
       }
       ctx.fillStyle = 'rgba(20,184,166,0.45)'; ctx.fill()
 
-      // Mirror the particle layer into the nav's clipped copy (1:1 device pixels)
-      navCtx.clearRect(0, 0, navCanvas.width, navCanvas.height)
-      navCtx.drawImage(canvas, 0, 0)
+      // Mirror the particle layer into the nav's clipped copy (1:1 device
+      // pixels) — but only while the nav background is actually shown
+      if (window.__navBgVisible) {
+        navCtx.clearRect(0, 0, navCanvas.width, navCanvas.height)
+        navCtx.drawImage(canvas, 0, 0)
+      }
 
       requestAnimationFrame(animate)
     }
