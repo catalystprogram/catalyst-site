@@ -10,10 +10,18 @@
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=4" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
   <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preload" href="fonts/inter-var-latin.woff2" as="font" type="font/woff2" crossorigin />
   <style>
+    /* self-hosted variable font, preloaded; font-display: block prevents
+       the fallback-font flash on load (FOUT) */
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400 800;
+      font-display: block;
+      src: url('fonts/inter-var-latin.woff2') format('woff2');
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -34,9 +42,9 @@
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
-      user-select: none;
-      -webkit-user-select: none;
     }
+
+    ::selection { background: rgba(45, 212, 191, 0.3); }
 
     /* ============================================================
        PARTICLE FIELD BACKGROUND  (copied from the particle-field demo)
@@ -102,16 +110,6 @@
       40% { transform: translate(60px,20px) scale(0.85); }
       60% { transform: translate(-30px,60px) scale(1.1); }
       80% { transform: translate(40px,-30px) scale(0.95); }
-    }
-
-    .bg__noise {
-      position: absolute;
-      inset: 0;
-      opacity: 0.025; /* subtle film grain; orb dithering is baked into the sprites */
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-      /* normal blending: overlay blend forced a full-viewport recomposite
-         every frame over the animating orbs; invisible difference at 3.5% */
-      pointer-events: none;
     }
 
     .count { display: none; }
@@ -269,7 +267,7 @@
     .process { list-style: none; margin: 0; padding: 0; }
     .process__step {
       display: grid; grid-template-columns: 64px 1fr; gap: 28px;
-      padding: 22px 0; align-items: start;
+      padding: 22px 0; align-items: baseline;
     }
     .process__num {
       font-family: var(--display); font-size: 26px; font-weight: 700;
@@ -282,6 +280,41 @@
       .process__num { font-size: 22px; }
     }
 
+    /* --- Timeline --- */
+    /* padding-top is the lead-in runway: it fills day by day from the
+       hidden season start (July 1) until the first milestone */
+    .timeline { position: relative; max-width: 640px; padding-top: 64px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 7px; top: 0;
+      bottom: var(--rail-bottom, 6px);
+      width: 1px; background: var(--line);
+    }
+    .timeline__fill {
+      position: absolute; left: 7px; top: 0; width: 1px; height: 0;
+      background: var(--teal); transition: height 0.8s ease;
+    }
+    .timeline__origin {
+      position: absolute; left: 2px; top: -5px; width: 11px; height: 11px;
+      border-radius: 50%; background: var(--teal);
+      box-shadow: 0 0 10px rgba(45, 212, 191, 0.35);
+    }
+    .timeline__item { position: relative; padding: 0 0 46px 44px; }
+    .timeline__item:last-child { padding-bottom: 0; }
+    .timeline__dot {
+      position: absolute; left: 0; top: 4px; width: 15px; height: 15px;
+      border-radius: 50%; background: var(--ink);
+      border: 1px solid rgba(224, 238, 235, 0.3);
+      transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    }
+    .timeline__item.is-active .timeline__dot {
+      border-color: var(--teal); background: var(--teal);
+      box-shadow: 0 0 12px rgba(45, 212, 191, 0.35);
+    }
+    .timeline__date {
+      font-size: 13px; color: var(--teal); font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .timeline__item h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin-top: 6px; }
     /* --- Team --- */
     .team__grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -332,7 +365,6 @@
     <div class="bg__orb bg__orb--1"></div>
     <div class="bg__orb bg__orb--2"></div>
     <div class="bg__orb bg__orb--3"></div>
-    <div class="bg__noise"></div>
   </div>
   <canvas class="bg__canvas" id="particles"></canvas>
   <div class="count" id="count"></div>
@@ -345,15 +377,15 @@
           <div class="bg__orb bg__orb--1"></div>
           <div class="bg__orb bg__orb--2"></div>
           <div class="bg__orb bg__orb--3"></div>
-          <div class="bg__noise"></div>
         </div>
         <canvas class="bg__canvas bg__canvas--nav" id="navParticles"></canvas>
       </div>
       <div class="container nav__inner">
-        <a href="#top" class="nav__logo"><img src="cat.png" alt="Catalyst cat logo" /><span class="nav__logo-text">Catalyst</span></a>
+        <a href="#top" class="nav__logo"><img src="cat.png" alt="Catalyst cat logo" width="1336" height="2242" /><span class="nav__logo-text">Catalyst</span></a>
         <ul class="nav__links">
           <li><a href="#about" class="nav__link">About</a></li>
           <li><a href="#process" class="nav__link">Process</a></li>
+          <li><a href="#timeline" class="nav__link">Timeline</a></li>
           <li><a href="#team" class="nav__link">Team</a></li>
         </ul>
       </div>
@@ -363,7 +395,9 @@
       <div class="container">
         <h1 class="hero__title">The Catalyst Program</h1>
         <p class="hero__subtitle">
-          We bring students and mentors together to produce high-impact work.
+          A ten-week remote program connecting undergraduate students and mentors
+          to work on projects related to global health, animal welfare, AI safety,
+          and any field with the potential for enormous positive impact.
         </p>
         <div class="hero__actions">
           <a href="https://docs.google.com/forms/d/e/1FAIpQLSeHTIPZu2zmbi4SgdJRsAGxy1ymuOg5B0wUu5-4gWow4ng-Ww/viewform?usp=sharing&amp;ouid=113259978758331280098" target="_blank" rel="noopener noreferrer" class="btn btn--primary">Express Interest</a>
@@ -381,9 +415,11 @@
           governance), global health and development, biosecurity, or animal welfare.
         </p>
         <p>
-          Students will get the chance to build the skills and knowledge they’ll need for an
-          impactful career. Mentors will get the capacity to explore more ideas and the
-          opportunity to develop and guide future talent.
+          Students should apply if they care about having an impact and want to build
+          experience doing useful work. Mentors should apply if they have some experience
+          in their cause area and want to help with developing future talent. We think you
+          can be a great mentor even if you are early in your career, and we encourage you
+          to apply even if you’re a grad student or highly experienced undergraduate.
         </p>
       </div>
     </section>
@@ -400,9 +436,11 @@
             <div class="process__body">
               <h3>Applications</h3>
               <p>
-                Students can apply starting in August. The application will allow you to
-                select what projects you would be most interested in working on, and may
-                include additional assessments based on your selections.
+                The student application will be released on August 21st. The application
+                will allow students to rank what projects they are the most interested in
+                and answer specific questions about them. Mentors will rank the student
+                applicants, and the two rankings will be used to create groups for each
+                project.
               </p>
             </div>
           </li>
@@ -414,7 +452,7 @@
                 Successful applicants will be put into groups with their mentor, an experienced
                 student or professional working in one of our cause areas. The students will
                 meet with their mentor at least once a week, and will work towards a
-                predetermined deliverable. Along the way, students will improve their problem
+                specific goal or deliverable. Along the way, students will improve their problem
                 solving abilities and knowledge of their cause area.
               </p>
             </div>
@@ -443,6 +481,49 @@
             </div>
           </li>
         </ol>
+      </div>
+    </section>
+
+    <section class="section" id="timeline">
+      <div class="container">
+        <div class="section__header">
+          <span class="eyebrow">Timeline</span>
+          <h2 class="section__title">Key dates</h2>
+        </div>
+        <div class="timeline" id="timelineList">
+          <div class="timeline__fill" id="timelineFill"></div>
+          <div class="timeline__origin"></div>
+          <div class="timeline__item" data-date="2026-07-20">
+            <div class="timeline__dot"></div>
+            <div class="timeline__date">July 20</div>
+            <h3>Mentor application available</h3>
+          </div>
+          <div class="timeline__item" data-date="2026-08-14">
+            <div class="timeline__dot"></div>
+            <div class="timeline__date">August 14</div>
+            <h3>Mentor application deadline</h3>
+          </div>
+          <div class="timeline__item" data-date="2026-08-21">
+            <div class="timeline__dot"></div>
+            <div class="timeline__date">August 21</div>
+            <h3>Student application released</h3>
+          </div>
+          <div class="timeline__item" data-date="2026-09-14">
+            <div class="timeline__dot"></div>
+            <div class="timeline__date">September 14</div>
+            <h3>Student application deadline</h3>
+          </div>
+          <div class="timeline__item" data-date="2026-09-28">
+            <div class="timeline__dot"></div>
+            <div class="timeline__date">September 28</div>
+            <h3>Mentor pairings released</h3>
+          </div>
+          <div class="timeline__item" data-date="2026-11-30" data-end="2026-12-07">
+            <div class="timeline__dot"></div>
+            <div class="timeline__date">November 30 &ndash; December 7</div>
+            <h3>Final week and wrap up</h3>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -480,6 +561,7 @@
           <ul class="footer__links">
             <li><a href="#about">About</a></li>
             <li><a href="#process">Process</a></li>
+            <li><a href="#timeline">Timeline</a></li>
             <li><a href="#team">Team</a></li>
           </ul>
         </div>
@@ -505,6 +587,39 @@
       calc(); onScroll()
       window.addEventListener('scroll', onScroll, { passive: true })
       window.addEventListener('resize', () => { calc(); onScroll() })
+    })()
+  </script>
+
+  <!-- ===== Timeline: position everything by the actual date ===== -->
+  <script>
+    (function () {
+      const list = document.getElementById('timelineList')
+      if (!list) return
+      const fill = document.getElementById('timelineFill')
+      const items = Array.from(list.querySelectorAll('.timeline__item'))
+      const day = d => new Date(d + 'T00:00:00')
+      const today = new Date(); today.setHours(0, 0, 0, 0)
+
+      // fill the rail up to today's position, interpolated between milestones;
+      // a hidden July 1 anchor at the rail's top makes the lead-in segment
+      // above the first milestone fill a little more each day
+      function layout() {
+        const anchors = [{ t: day('2026-07-01').getTime(), y: 0 }]
+          .concat(items.map(it => ({ t: day(it.dataset.date).getTime(), y: it.offsetTop + 11 })))
+        const t = today.getTime()
+        let y = anchors[anchors.length - 1].y
+        if (t <= anchors[0].t) y = 0
+        else for (let i = 0; i < anchors.length - 1; i++) {
+          const a = anchors[i], b = anchors[i + 1]
+          if (t >= a.t && t <= b.t) { y = a.y + (b.y - a.y) * ((t - a.t) / (b.t - a.t)); break }
+        }
+        fill.style.height = y + 'px'
+        // end the grey track exactly at the final dot
+        list.style.setProperty('--rail-bottom', (list.offsetHeight - anchors[anchors.length - 1].y) + 'px')
+        for (const it of items) it.classList.toggle('is-active', day(it.dataset.date) <= today)
+      }
+      layout()
+      window.addEventListener('resize', layout)
     })()
   </script>
 
@@ -582,7 +697,37 @@
     }
     updateCount()
 
-    window.addEventListener('contextmenu', e => e.preventDefault())
+    // text stays selectable, but pointer-downs on non-text areas (the
+    // particle-add surface) must not initiate a selection highlight —
+    // tested against actual glyph rects, since text containers (grid rows,
+    // list items) can stretch far wider than the words they hold
+    function hitsText(x, y) {
+      let node = null
+      if (document.caretRangeFromPoint) {
+        const r = document.caretRangeFromPoint(x, y)
+        node = r && r.startContainer
+      } else if (document.caretPositionFromPoint) {
+        const p = document.caretPositionFromPoint(x, y)
+        node = p && p.offsetNode
+      }
+      if (!node || node.nodeType !== 3) return false
+      const range = document.createRange()
+      range.selectNodeContents(node)
+      for (const rect of range.getClientRects()) {
+        if (x >= rect.left - 3 && x <= rect.right + 3 && y >= rect.top - 3 && y <= rect.bottom + 3) return true
+      }
+      return false
+    }
+    window.addEventListener('mousedown', e => {
+      if (e.target === document.documentElement) return
+      if (e.target.closest('a, button, input')) return
+      if (!hitsText(e.clientX, e.clientY)) e.preventDefault()
+    })
+    window.addEventListener('contextmenu', e => {
+      if (e.target.closest('a, button, input')) return
+      if (String(window.getSelection()) !== '') return
+      if (!hitsText(e.clientX, e.clientY)) e.preventDefault()
+    })
     window.addEventListener('pointerdown', e => {
       addParticle(e.clientX, e.clientY); updateCount()
     })
@@ -632,7 +777,9 @@
       const s = scale, s2 = s * s
       const ND = 160 * s, NDSq = 25600 * s2, SD = 40 * s, SDSq = 1600 * s2
       const CRSq = 6400 * s2, CR = 80 * s, CT = 25
-      const LDSq = 16900 * s2
+      // shrink the connection radius as particles are added so line
+      // rasterization stays bounded (cost otherwise grows ~quadratically)
+      const LDSq = 16900 * s2 * (n > 120 ? Math.max(0.35, 120 / n) : 1)
       const drawLines = true
 
       for (let i = 0; i < n; i++) pnc[i] = 0
