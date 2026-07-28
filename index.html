@@ -164,7 +164,8 @@
       align-self: flex-end; transform: translateY(8px);
     }
     .nav__logo-text { transform: translateY(8px); }
-    .nav__links { display: flex; gap: 28px; list-style: none; }
+    /* match the wordmark's translateY so links share its baseline */
+    .nav__links { display: flex; gap: 28px; list-style: none; transform: translateY(8px); }
     .nav__link {
       font-size: 15px; color: var(--text-dim); font-weight: 600;
       letter-spacing: 0.01em; position: relative;
