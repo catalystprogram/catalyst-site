@@ -10,16 +10,16 @@
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=4" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
   <link rel="apple-touch-icon-precomposed" href="apple-touch-icon.png" />
-  <link rel="preload" href="fonts/inter-var-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin />
   <style>
     /* self-hosted variable font, preloaded; font-display: block prevents
        the fallback-font flash on load (FOUT) */
     @font-face {
-      font-family: 'Inter';
+      font-family: 'Schibsted Grotesk';
       font-style: normal;
-      font-weight: 400 800;
+      font-weight: 400 900;
       font-display: block;
-      src: url('fonts/inter-var-latin.woff2') format('woff2');
+      src: url('fonts/schibsted-grotesk.woff2') format('woff2');
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,7 +31,7 @@
       --text: #eef6f4;
       --text-dim: rgba(224, 238, 235, 0.55);
       --line: rgba(224, 238, 235, 0.12);
-      --display: 'Inter', system-ui, -apple-system, sans-serif;
+      --display: 'Schibsted Grotesk', system-ui, -apple-system, sans-serif;
     }
 
     html { scroll-behavior: smooth; }
@@ -39,7 +39,7 @@
     body {
       background: var(--ink);
       color: var(--text);
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-family: 'Schibsted Grotesk', system-ui, -apple-system, sans-serif;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
@@ -64,6 +64,7 @@
        pre-dithered PNG sprite — CSS gradients band visibly at these
        opacities on some renderers (Edge), baked-in noise doesn't. */
     .bg__orb {
+      display: none;
       position: absolute;
       background-size: 100% 100%;
       background-repeat: no-repeat;
