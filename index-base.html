@@ -363,47 +363,6 @@
     .footer__links a { color: var(--text-dim); font-size: 14px; line-height: 1; transition: color 0.2s ease; }
     .footer__links a:hover { color: var(--text); }
     .footer__copy { color: var(--text-dim); font-size: 13px; margin-top: 24px; opacity: 0.7; }
-
-    /* --- Projects preview (prototype) --- */
-    .pgrid {
-      display: grid; column-gap: 46px; row-gap: 34px;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-    }
-    .pcard {
-      position: relative; border-top: 1px solid var(--line); padding-top: 20px;
-      display: flex; flex-direction: column; gap: 14px;
-    }
-    .pcard__link { position: absolute; inset: -6px -10px; z-index: 0; }
-    .pcard__link:focus-visible { outline: 2px solid var(--teal); outline-offset: 0; }
-    .pcard > *:not(.pcard__link) { position: relative; z-index: 1; pointer-events: none; }
-    .pcard__top { display: flex; gap: 13px; align-items: center; }
-    .pcard__avatar {
-      width: 54px; height: 54px; border-radius: 50%; flex: none; object-fit: cover;
-      background: rgba(224,238,235,.08); border: 1px solid rgba(224,238,235,.16);
-      display: grid; place-items: center; font-weight: 700; font-size: 18px; color: var(--text-dim);
-    }
-    .pcard__name { font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; }
-    .pcard__org { color: var(--text-dim); font-size: 13px; margin-top: 3px; }
-    .pcard__title {
-      font-size: 17px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.32;
-      transition: color .2s ease;
-    }
-    .pcard__title::after {
-      content: '\203A'; display: inline-block; margin-left: 8px;
-      color: var(--teal); font-weight: 500;
-    }
-    .pcard:hover .pcard__title { color: #fff; }
-    .pcard__sum {
-      font-size: 14px; color: var(--text-dim); line-height: 1.5; margin-top: 8px;
-      display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
-    }
-    .section__desc .plink { color: var(--teal); font-weight: 600; }
-    .section__desc .plink:hover { text-decoration: underline; }
-    .pall {
-      display: inline-block; margin-top: 44px;
-      font-size: 15px; font-weight: 600; color: var(--teal);
-    }
-    .pall::after { content: '\203A'; margin-left: 8px; display: inline-block; }
   </style>
 </head>
 <body>
@@ -430,7 +389,6 @@
       <div class="container nav__inner">
         <a href="#top" class="nav__logo"><img src="cat.png" alt="Catalyst cat logo" width="1336" height="2242" /><span class="nav__logo-text">Catalyst</span></a>
         <ul class="nav__links">
-          <li><a href="#projects" class="nav__link">Projects</a></li>
           <li><a href="#about" class="nav__link">About</a></li>
           <li><a href="#process" class="nav__link">Process</a></li>
           <li><a href="#timeline" class="nav__link">Timeline</a></li>
@@ -453,94 +411,6 @@
         </div>
       </div>
     </header>
-
-    <section class="section" id="projects">
-      <div class="container">
-        <div class="section__header">
-          <h2 class="section__title">Projects this term</h2>
-          <p class="section__desc">
-            <a class="plink" href="https://forms.fillout.com/t/5hBi1ayhj8us" target="_blank" rel="noopener noreferrer">Apply here</a>
-            to be a student mentee on one of these projects. Applications are due
-            September&nbsp;14th, AoE.
-          </p>
-        </div>
-        <div class="pgrid">
-          <article class="pcard">
-            <a class="pcard__link" href="mentors.html#roman-ross" aria-label="Build better AI safety career pipelines"></a>
-            <div class="pcard__top">
-              <img class="pcard__avatar" src="mentors/roman-ross.jpg" alt="" loading="lazy" width="480" height="480" />
-              <div>
-                <div class="pcard__name">Roman Ross</div>
-                <div class="pcard__org">Effective Altruism Purdue</div>
-              </div>
-            </div>
-            <div>
-              <div class="pcard__title">Build better AI safety career pipelines</div>
-              <div class="pcard__sum">Mentees will think about strategies for helping people upskill and get jobs in EA or AI safety, working from existing resources such as aistalentpipelines.org. They will then have some flexibility to choose a mini-project that addresses some of these gaps.</div>
-            </div>
-          </article>
-          <article class="pcard">
-            <a class="pcard__link" href="mentors.html#nathan-reed" aria-label="Surveying the Literature on LLM Claim Extraction Evaluation"></a>
-            <div class="pcard__top">
-              <img class="pcard__avatar" src="mentors/nathan-reed.jpg" alt="" loading="lazy" width="480" height="480" />
-              <div>
-                <div class="pcard__name">Nathan Reed</div>
-                <div class="pcard__org">Independent</div>
-              </div>
-            </div>
-            <div>
-              <div class="pcard__title">Surveying the Literature on LLM Claim Extraction Evaluation</div>
-              <div class="pcard__sum">Currently, the literature on how to evaluate the ability of LLMs to extract claims from passages faithfully and comprehensively is scattered. In this project, we&#x27;d survey the existing literature on this topic in order to write a blog post with our findings.</div>
-            </div>
-          </article>
-          <article class="pcard">
-            <a class="pcard__link" href="mentors.html#ahmed-wez-1" aria-label="Navigating the Intelligence Explosion"></a>
-            <div class="pcard__top">
-              <img class="pcard__avatar" src="mentors/ahmed-wez.jpg" alt="" loading="lazy" width="480" height="480" />
-              <div>
-                <div class="pcard__name">Ahmed Wez</div>
-                <div class="pcard__org">MIT AI Alignment / Impact First</div>
-              </div>
-            </div>
-            <div>
-              <div class="pcard__title">Navigating the Intelligence Explosion</div>
-              <div class="pcard__sum">Build a research incubator for important and underexplored questions about the transition to AGI, where students propose their own ideas and get the support, mentorship, and resources to develop their most promising ideas further.</div>
-            </div>
-          </article>
-          <article class="pcard">
-            <a class="pcard__link" href="mentors.html#ahmed-wez-2" aria-label="The Mentor Bottleneck"></a>
-            <div class="pcard__top">
-              <img class="pcard__avatar" src="mentors/ahmed-wez.jpg" alt="" loading="lazy" width="480" height="480" />
-              <div>
-                <div class="pcard__name">Ahmed Wez</div>
-                <div class="pcard__org">MIT AI Alignment / Impact First</div>
-              </div>
-            </div>
-            <div>
-              <div class="pcard__title">The Mentor Bottleneck</div>
-              <div class="pcard__sum">Design a mentorship pipeline that helps train the next generation of AI safety mentors.</div>
-            </div>
-          </article>
-          <article class="pcard">
-            <a class="pcard__link" href="mentors.html#ahmed-wez-3" aria-label="Can We Still Tell Who Is Ahead in AI?"></a>
-            <div class="pcard__top">
-              <img class="pcard__avatar" src="mentors/ahmed-wez.jpg" alt="" loading="lazy" width="480" height="480" />
-              <div>
-                <div class="pcard__name">Ahmed Wez</div>
-                <div class="pcard__org">MIT AI Alignment / Impact First</div>
-              </div>
-            </div>
-            <div>
-              <div class="pcard__title">Can We Still Tell Who Is Ahead in AI?</div>
-              <div class="pcard__sum">If one actor has a better AI for coding while another has a better AI for planning, who is more capable? Who is in the lead? And what are the consequences for bargaining, deterrence, and strategic stability?</div>
-            </div>
-          </article>
-        </div>
-        <!-- hidden for now; restore when the full listing goes live:
-        <a class="pall" href="mentors.html">Browse all projects</a>
-        -->
-      </div>
-    </section>
 
     <section class="section section--about" id="about">
       <div class="container about">
@@ -692,7 +562,6 @@
         <div class="footer__inner">
           <div class="footer__brand">Catalyst</div>
           <ul class="footer__links">
-            <li><a href="#projects">Projects</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#process">Process</a></li>
             <li><a href="#timeline">Timeline</a></li>

@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mentors &amp; Projects — Catalyst Program</title>
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="preload" href="fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+  <style>
+@font-face {
+      font-family: 'Schibsted Grotesk';
+      font-style: normal;
+      font-weight: 400 900;
+      font-display: block;
+      src: url('fonts/schibsted-grotesk.woff2') format('woff2');
+    }
+
+    
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+      --teal: #2dd4bf;
+      --teal-soft: rgba(45, 212, 191, 0.6);
+      --ink: #0c1a27;
+      --text: #eef6f4;
+      --text-dim: rgba(224, 238, 235, 0.55);
+      --line: rgba(224, 238, 235, 0.12);
+      --display: 'Schibsted Grotesk', system-ui, -apple-system, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--text);
+      font-family: 'Schibsted Grotesk', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection { background: rgba(45, 212, 191, 0.3); }
+
+    
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ink); color: var(--text);
+      font-family: 'Schibsted Grotesk', system-ui, -apple-system, sans-serif;
+      line-height: 1.6; -webkit-font-smoothing: antialiased;
+    }
+    ::selection { background: rgba(45, 212, 191, 0.3); }
+
+/* ============================================================
+       PARTICLE FIELD BACKGROUND  (copied from the particle-field demo)
+       ============================================================ */
+    .bg {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(160deg, #0c1a27 0%, #102a3a 40%, #163a4a 70%, #1a5f6a 100%);
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .bg__canvas { position: fixed; top: 0; left: 0; z-index: 1; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+
+    /* No blur filter here: an 80px blur re-rasterizes these layers every
+       animation frame and saturates integrated GPUs. Each glow is a
+       pre-dithered PNG sprite — CSS gradients band visibly at these
+       opacities on some renderers (Edge), baked-in noise doesn't. */
+    .bg__orb {
+      display: none;
+      position: absolute;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      will-change: transform;
+    }
+
+    .bg__orb--1 {
+      width: 600px; height: 600px;
+      background-image: url('orb-1.png');
+      top: -15%; right: -10%;
+      animation: orbit1 30s ease-in-out infinite;
+    }
+
+    .bg__orb--2 {
+      width: 450px; height: 450px;
+      background-image: url('orb-2.png');
+      bottom: -10%; left: -8%;
+      animation: orbit2 25s ease-in-out infinite;
+    }
+
+    .bg__orb--3 {
+      width: 350px; height: 350px;
+      background-image: url('orb-3.png');
+      top: 40%; left: 50%;
+      animation: orbit3 35s ease-in-out infinite;
+    }
+
+    @keyframes orbit1 {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      25% { transform: translate(-60px,40px) scale(1.15); }
+      50% { transform: translate(30px,-50px) scale(0.9); }
+      75% { transform: translate(50px,30px) scale(1.1); }
+    }
+
+    @keyframes orbit2 {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      33% { transform: translate(70px,-30px) scale(1.1); }
+      66% { transform: translate(-40px,50px) scale(0.95); }
+    }
+
+    @keyframes orbit3 {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      20% { transform: translate(-50px,-40px) scale(1.2); }
+      40% { transform: translate(60px,20px) scale(0.85); }
+      60% { transform: translate(-30px,60px) scale(1.1); }
+      80% { transform: translate(40px,-30px) scale(0.95); }
+    }
+
+    .count { display: none; }
+
+    @media (max-width: 768px) {
+      .bg__orb--3 { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bg__orb { animation: none; }
+    }
+
+    
+    .content { position: relative; z-index: 10; }
+    .container { width: min(1180px, 100% - 48px); margin-inline: auto; }
+    a { color: inherit; text-decoration: none; }
+
+/* --- Nav --- */
+    .nav {
+      position: sticky; top: 0; z-index: 40; padding-top: 18px;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s ease;
+    }
+    .nav.is-scrolled { border-bottom-color: var(--line); }
+    /* Clipped, in-sync copy of the background so the bar reveals the
+       gradient + particles while masking the page text behind it. */
+    .nav__bg {
+      position: absolute; inset: 0; overflow: hidden; z-index: 0;
+      opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
+    }
+    .nav.is-scrolled .nav__bg { opacity: 1; }
+    .bg--nav { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; }
+    .bg__canvas--nav { position: absolute; top: 0; left: 0; }
+    .nav__inner {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 16px;
+      height: 62px;
+      position: relative; z-index: 1;
+    }
+    @media (max-width: 768px) { .nav__inner { height: 64px; } }
+    .nav__logo {
+      font-family: var(--display); font-weight: 700; font-size: 23px;
+      letter-spacing: -0.02em;
+      display: inline-flex; align-items: baseline; gap: 10px;
+    }
+    .nav__logo img {
+      height: 38px; width: auto; display: block;
+      align-self: flex-end; transform: translateY(8px);
+    }
+    .nav__logo-text { transform: translateY(8px); }
+    /* match the wordmark's translateY so links share its baseline */
+    .nav__links { display: flex; gap: 28px; list-style: none; transform: translateY(8px); }
+    .nav__link {
+      font-size: 15px; color: var(--text-dim); font-weight: 600;
+      letter-spacing: 0.01em; position: relative;
+      transition: color 0.25s ease;
+    }
+    .nav__link::after {
+      content: ''; position: absolute; left: 0; bottom: -4px;
+      width: 100%; height: 1px; background: var(--teal);
+      transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease;
+    }
+    .nav__link:hover { color: var(--text); }
+    .nav__link:hover::after { transform: scaleX(1); }
+
+    /* Tighten the bar on phones so the logo + link pill don't crowd */
+    @media (max-width: 600px) {
+      .container { width: min(1080px, 100% - 32px); }
+      .nav__logo { font-size: 19px; gap: 8px; }
+      .nav__logo img { height: 32px; transform: translateY(7px); }
+      .nav__links { gap: 16px; }
+      .nav__link { font-size: 13.5px; letter-spacing: 0; }
+    }
+
+    
+
+    /* ---------- page header ---------- */
+    .page-head { padding: 64px 0 40px; }
+    .page-head h1 {
+      font-size: clamp(34px, 5vw, 52px); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 16px;
+    }
+    .page-head p { color: var(--text-dim); font-size: 18px; max-width: 60ch; }
+
+    /* ---------- controls ---------- */
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+      justify-content: space-between; padding-bottom: 22px;
+      border-bottom: 1px solid var(--line); margin-bottom: 26px;
+    }
+    .status { color: var(--text-dim); font-size: 14.5px; }
+    .search {
+      flex: 0 1 280px; padding: 9px 14px; border-radius: 8px;
+      border: 1px solid var(--line); background: rgba(255,255,255,.04);
+      color: var(--text); font: inherit; font-size: 14px;
+    }
+    .search::placeholder { color: rgba(224,238,235,.4); }
+    .search:focus { outline: none; border-color: var(--teal); }
+
+    /* ---------- project grid ---------- */
+    /* flat entries separated by rules — no card fill, border box or radius */
+    .grid {
+      display: grid; column-gap: 46px; row-gap: 34px;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      padding-bottom: 80px;
+    }
+    .card {
+      position: relative; text-align: left; color: inherit;
+      border-top: 1px solid var(--line); padding-top: 20px;
+      display: flex; flex-direction: column; gap: 14px;
+      transition: border-color .2s ease;
+    }
+    .card:hover .card__ptitle { color: #fff; }
+    .card__link { position: absolute; inset: -6px -10px; z-index: 0; }
+    .card__link:focus-visible { outline: 2px solid var(--teal); outline-offset: 0; }
+    .card > *:not(.card__link) { position: relative; z-index: 1; pointer-events: none; }
+    .card__top { display: flex; gap: 13px; align-items: center; }
+    .avatar {
+      width: 54px; height: 54px; border-radius: 50%; flex: none;
+      object-fit: cover; background: rgba(224,238,235,.08);
+      border: 1px solid rgba(224,238,235,.16);
+      display: grid; place-items: center;
+      font-weight: 700; font-size: 18px; color: var(--text-dim);
+    }
+    .card__name { font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; }
+    .card__org { color: var(--text-dim); font-size: 13px; margin-top: 3px; }
+    .card__ptitle {
+      font-size: 17px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.32;
+      transition: color .2s ease;
+    }
+    /* persistent chevron: a clickable affordance attached to the headline
+       rather than a repeated call-to-action line */
+    .card__ptitle::after {
+      content: '›'; display: inline-block; margin-left: 8px;
+      color: var(--teal); font-weight: 500;
+    }
+    .card__psum {
+      font-size: 14px; color: var(--text-dim); line-height: 1.5; margin-top: 8px;
+      display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .empty { color: var(--text-dim); padding: 30px 0 90px; }
+
+    /* ---------- modal ---------- */
+    .backdrop {
+      position: fixed; inset: 0; z-index: 100; display: none;
+      background: rgba(4,10,16,.72); backdrop-filter: blur(6px);
+      padding: 4vh 20px; overflow-y: auto;
+    }
+    .backdrop.open { display: block; }
+    .modal {
+      width: min(820px, 100%); margin: 0 auto;
+      background: #0e2130; border: 1px solid rgba(224,238,235,.14);
+      border-radius: 4px; overflow: hidden; animation: rise .22s ease;
+    }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+    .modal__head {
+      display: flex; gap: 18px; align-items: flex-start;
+      padding: 24px 30px; border-bottom: 1px solid var(--line);
+      position: sticky; top: 0; background: #0e2130; z-index: 2;
+    }
+    .modal__head .avatar { width: 62px; height: 62px; font-size: 21px; }
+    .modal__name { font-size: 19px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.2; }
+    .modal__org { color: var(--text-dim); font-size: 14px; margin-top: 3px; }
+    mark { background: rgba(224,238,235,.2); color: var(--text); padding: 0 2px; }
+    .mnav { margin-left: auto; display: flex; gap: 7px; flex: none; }
+    .mnav button {
+      width: 36px; height: 36px; border-radius: 3px; cursor: pointer;
+      border: 1px solid var(--line); background: transparent; color: var(--text-dim);
+      display: grid; place-items: center; transition: color .2s, border-color .2s;
+    }
+    .mnav button:hover:not(:disabled) { color: var(--text); border-color: rgba(224,238,235,.35); }
+    .mnav button:disabled { opacity: .3; cursor: default; }
+    .close { font-size: 20px; line-height: 1; }
+    .modal__body { padding: 28px 30px 34px; }
+    /* plain sentence-case headings, not uppercase letterspaced eyebrows */
+    .modal__label {
+      font-size: 15px; font-weight: 700; letter-spacing: -0.01em;
+      color: var(--text); margin-bottom: 10px;
+    }
+    .modal__title {
+      font-size: clamp(22px, 3.2vw, 28px); font-weight: 800;
+      letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 12px;
+    }
+    .modal__lead { color: var(--text); font-size: 16.5px; margin-bottom: 22px; }
+    .prose p { color: var(--text-dim); font-size: 15.5px; }
+    .prose p + p { margin-top: 11px; }
+    .prose h4 { font-size: 15.5px; font-weight: 700; color: var(--text); margin: 18px 0 8px; }
+    .prose ul { margin: 10px 0 10px 20px; }
+    .prose li { color: var(--text-dim); font-size: 15.5px; margin-bottom: 6px; }
+    .prose a { color: var(--teal); text-decoration: underline; }
+    /* indented rule instead of a tinted rounded callout */
+    .qbox { margin-top: 26px; padding-left: 20px; border-left: 2px solid rgba(224,238,235,.28); }
+    .qbox p, .qbox li { font-size: 15px; }
+    .section { margin-top: 30px; padding-top: 26px; border-top: 1px solid var(--line); }
+    .more-list { display: flex; flex-direction: column; }
+    .more-list a {
+      color: var(--text); font-size: 15px; font-weight: 500;
+      padding: 12px 0; border-top: 1px solid var(--line);
+      transition: color .2s ease;
+    }
+    .more-list a:first-child { border-top: 0; padding-top: 2px; }
+    .more-list a:hover { color: #fff; }
+
+    @media (max-width: 620px) {
+      .modal__head { padding: 18px 20px; gap: 13px; }
+      .modal__head .avatar { width: 50px; height: 50px; font-size: 17px; }
+      .modal__body { padding: 22px 20px 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg">
+    <div class="bg__orb bg__orb--1"></div>
+    <div class="bg__orb bg__orb--2"></div>
+    <div class="bg__orb bg__orb--3"></div>
+  </div>
+  <canvas class="bg__canvas" id="particles"></canvas>
+  <div class="count" id="count"></div>
+
+  <div class="content">
+    <nav class="nav">
+      <div class="nav__bg" aria-hidden="true">
+        <div class="bg bg--nav">
+          <div class="bg__orb bg__orb--1"></div>
+          <div class="bg__orb bg__orb--2"></div>
+          <div class="bg__orb bg__orb--3"></div>
+        </div>
+        <canvas class="bg__canvas bg__canvas--nav" id="navParticles"></canvas>
+      </div>
+      <div class="container nav__inner">
+        <a href="index.html" class="nav__logo"><img src="cat.png" alt="Catalyst cat logo" width="1336" height="2242" /><span class="nav__logo-text">Catalyst</span></a>
+        <ul class="nav__links">
+          <li><a href="index.html#about" class="nav__link">About</a></li>
+          <li><a href="index.html#process" class="nav__link">Process</a></li>
+          <li><a href="index.html#timeline" class="nav__link">Timeline</a></li>
+          <li><a href="index.html#team" class="nav__link">Team</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <header class="page-head">
+      <div class="container">
+        <h1>Mentors &amp; projects</h1>
+        <p>Fall 2026 cohort. Browse the projects on offer this term — open one to read the full
+          description, the mentor's background, and the question you'll answer when applying.</p>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="controls">
+        <p class="status" id="status"></p>
+        <input class="search" id="search" type="search" placeholder="Search projects or mentors…" aria-label="Search projects or mentors" />
+      </div>
+      <div class="grid" id="grid"></div>
+      <p class="empty" id="empty" hidden></p>
+    </main>
+  </div>
+
+  <div class="backdrop" id="backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal" id="modal"></div>
+  </div>
+
+  <script id="project-data" type="application/json">[{"slug": "roman-ross", "mentor": "roman-ross", "name": "Roman Ross", "org": "Effective Altruism Purdue", "photo": "mentors/roman-ross.jpg", "initials": "RR", "bio_html": "", "title": "Build better AI safety career pipelines", "summary": "Mentees will think about strategies for helping people upskill and get jobs in EA or AI safety, working from existing resources such as aistalentpipelines.org. They will then have some flexibility to choose a mini-project that addresses some of these gaps.", "desc_html": "<p>Many of the routes to getting a job in EA or AI safety are confusing, illegible, or needlessly challenging. While there are currently a variety of support networks to make this process easier, a lack of organizing / fieldbuilding capacity has left certain parts of the talent pipeline more neglected than others.</p>\n<p>As a mentee, you will scope out a small project that addresses some of these gaps, and then find a way to bring it into existence. There is a lot of flexibility in what &quot;successful completion&quot; of this project may look like: it could be a blog post, an internet resource, an event for your university, or a research report into a confusing problem. For more context, I recommend skimming <a href=\"https://forum.effectivealtruism.org/posts/gYJJKea4DNs89iEbb/a-complete-overview-of-our-ai-safety-talent-pipelines\" target=\"_blank\" rel=\"noopener noreferrer\">my EA Forum post</a> on the topic.</p>\n<p>I primarily want mentees who are interested in thinking carefully about needs in AI safety fieldbuilding or EA community building, and can execute well on fuzzy tasks. If you&#x27;ve successfully coordinated a mildly complex event, written a blog post addressing a general community need, or run a club, or if you think you would be good at doing those things, you would be a good fit for this project.</p>", "q_html": "<p>If you haven&#x27;t already, I would like you to read &quot;<a href=\"https://thatvastvariety.substack.com/p/your-goal-isnt-really-to-get-a-job\" target=\"_blank\" rel=\"noopener noreferrer\">Your Goal Isn&#x27;t to Get a Job</a>,&quot; by Matt Beard. After doing so, briefly (in ~200 words or less) explain what your plan is to &quot;get good&quot; and &quot;be known.&quot;</p>", "siblings": []}, {"slug": "nathan-reed", "mentor": "nathan-reed", "name": "Nathan Reed", "org": "Independent", "photo": "mentors/nathan-reed.jpg", "initials": "NR", "bio_html": "<p>I am a second-year computer science PhD student at Purdue University, and founded the Effective Altruism and AI Safety groups at Purdue. My current research projects are in the fields of LLM evaluations and AI for epistemics.</p>", "title": "Surveying the Literature on LLM Claim Extraction Evaluation", "summary": "Currently, the literature on how to evaluate the ability of LLMs to extract claims from passages faithfully and comprehensively is scattered. In this project, we'd survey the existing literature on this topic in order to write a blog post with our findings.", "desc_html": "<p><a href=\"https://flf.org/projects/epistack\" target=\"_blank\" rel=\"noopener noreferrer\">AI-assisted knowledge bases</a> could allow researchers to quickly assess vast numbers of documents without having to rely on the opaque and often unreliable judgement of current Deep Research tools. A key step in the creation of tools to build these knowledge bases is claim extraction: pulling all claims from a document while preserving their meaning and structure. To improve on this task, some method of measuring success is needed; however, existing evaluations often miss important aspects of claim extraction, and the current literature is scattered across many subfields.</p>\n<p>In this project, we will survey the literature on the evaluation of LLM claim extraction. Day-to-day, this means we will search for literature using a variety of tools and methods, read or skim the papers we find, and map out the similarities and differences between them. By the end of the project, we should have a fairly comprehensive survey of the LLM claim extraction evaluation literature, which we will publish as a blog post.</p>\n<p>Prerequisites for this project are fairly minimal: some basic understanding of how LLMs operate and basic statistics (eg confidence intervals, precision/recall, etc).</p>", "q_html": "<p>Find and link a paper released in the last year related to claim extraction and summarize it in your own words. Then, explain at least one criticism you have of the paper. (Limit: 250 words)</p>", "siblings": []}, {"slug": "ahmed-wez-1", "mentor": "ahmed-wez", "name": "Ahmed Wez", "org": "MIT AI Alignment / Impact First", "photo": "mentors/ahmed-wez.jpg", "initials": "AW", "bio_html": "<p>I&#x27;m an incoming undergraduate student working on AI safety research and community building. I&#x27;m a fellow at MIT AI Alignment and one of 25 fellows in the Impact First Fellowship.</p>\n<p>On the research side, I started out working on pancreatic cancer modeling, then moved into computer vision for security and weapon detection, followed by ML theory and mathematical reasoning in LLMs, and now I&#x27;m focused on AI safety and AI strategy research. I&#x27;ve published work at several conferences and workshops, and I&#x27;ve peer-reviewed a couple dozen papers on AI safety and ML theory for leading conferences, including NeurIPS.</p>\n<p>On the fieldbuilding side, I direct Nous, a program exploring the philosophy behind AI safety with ~210 participants and an overall rating of 8.5/10, and I&#x27;ve helped organize a couple of hackathons and other events around different areas of AI.</p>", "title": "Navigating the Intelligence Explosion", "summary": "Build a research incubator for important and underexplored questions about the transition to AGI, where students propose their own ideas and get the support, mentorship, and resources to develop their most promising ideas further.", "desc_html": "<p>There is relatively a lot of work on technical AI safety, AI governance, and AI strategy (which is amazing!), and there are already many excellent programs where people can learn about these areas and work with experienced researchers. At the same time, there are still many important questions about how humanity can navigate the transition to AGI that we have only a limited understanding of.</p>\n<p>This project is about building a research incubator for these kinds of questions. Applicants will propose questions or projects they think are important and worth investigating, and we&#x27;ll select the ones that seem particularly promising. We&#x27;ll then work with students to develop them further. The projects could be about AI strategy, international security, governance, economics, coordination, AI safety, or really anything else that seems relevant to the transition to AGI.</p>\n<p>During the first two months of the program, we&#x27;ll focus on setting up the idea, developing the structure of the incubator, figuring out how we want to select and support projects, finding potential mentors and collaborators, setting up the infrastructure, and working on funding and other practical details. In the third month, the plan is to open applications and start running the initiative.</p>\n<p>This is something I&#x27;m personally very interested in, so I&#x27;d be happy to work closely with the students throughout the project. I&#x27;m mainly looking for people who already have a strong understanding of AI safety and its broader implications, ideally through something like ARENA, BlueDot&#x27;s AGI Strategy course, or an equivalent fellowship/program. They should be able to think and communicate clearly, be curious about difficult and poorly understood questions in the AI safety area, and enjoy figuring things out without having every step specified in advance. They should also be interested in designing programs, working with researchers, and helping turn an idea into something that can run. Experience organizing a community, fellowship, research program, or any similar project would be a major plus.</p>\n<p>By the end of the program, the goal is to have the first version of the incubator ready to run, with a clear process for selecting and supporting projects and a first cohort of students working on promising research questions. Depending on the projects, the outputs could include research papers, models, simulations, empirical analyses, policy work, or other forms of research.</p>\n<p>THEORY OF CHANGE</p>\n<p>There are already many ways for people to learn about AI safety and AI strategy and to work with experienced researchers. I don&#x27;t think this project needs to replace those programs. Instead, I&#x27;m interested in creating another place where people can take an important questions that they think are being overlooked, investigate them seriously, and see whether they can become a worthwhile research project.</p>\n<p>The transition to AGI could involve decisions with enormous and potentially irreversible consequences, but we still have many open questions about how these systems could affect international security, coordination, governance, strategic competition, and other parts of society. Some of these questions may already have good answers, while many others may have received very little attention. The goal is to find the questions that are both important and worth investigating further.</p>\n<p>Therefore, the main goal of this project is to build a research incubator that can identify promising research questions around advanced AI and the transition to AGI, and help develop them further. The incubator would give students support, mentorship, and the resources they need to take an interesting question, investigate it further, and turn it into a serious piece of research.</p>", "q_html": "<p>For the questions below, please be specific. I&#x27;d much rather see 2-3 well-developed ideas than 5+ underdeveloped ones. Go in-depth where you can, and make your reasoning clear.</p>\n<p>(Q1): What do you think we should prioritize when designing the incubator, and why? What would you want to get right before we launch the first cohort? (250 words max)</p>\n<p>(Q2): What do you think would be the biggest challenges in running a program like this, and how would you try to address them? (250 words max)</p>\n<p>(Q3): Imagine that we have received a large number of project proposals for the first cohort. How would you go about deciding which projects to accept, and what would you do to help the strongest ideas develop into good research projects? (250 words max)</p>", "siblings": [{"slug": "ahmed-wez-2", "title": "The Mentor Bottleneck"}, {"slug": "ahmed-wez-3", "title": "Can We Still Tell Who Is Ahead in AI?"}]}, {"slug": "ahmed-wez-2", "mentor": "ahmed-wez", "name": "Ahmed Wez", "org": "MIT AI Alignment / Impact First", "photo": "mentors/ahmed-wez.jpg", "initials": "AW", "bio_html": "<p>I&#x27;m an incoming undergraduate student working on AI safety research and community building. I&#x27;m a fellow at MIT AI Alignment and one of 25 fellows in the Impact First Fellowship.</p>\n<p>On the research side, I started out working on pancreatic cancer modeling, then moved into computer vision for security and weapon detection, followed by ML theory and mathematical reasoning in LLMs, and now I&#x27;m focused on AI safety and AI strategy research. I&#x27;ve published work at several conferences and workshops, and I&#x27;ve peer-reviewed a couple dozen papers on AI safety and ML theory for leading conferences, including NeurIPS.</p>\n<p>On the fieldbuilding side, I direct Nous, a program exploring the philosophy behind AI safety with ~210 participants and an overall rating of 8.5/10, and I&#x27;ve helped organize a couple of hackathons and other events around different areas of AI.</p>", "title": "The Mentor Bottleneck", "summary": "Design a mentorship pipeline that helps train the next generation of AI safety mentors.", "desc_html": "<p>There are increasingly many ways for people to enter AI safety (which is amazing!), but much less infrastructure for developing the people who mentor them. We still have limited understanding of what makes someone a great mentor, how mentoring skills can be developed, how to help mentors improve their research judgment and taste, and how to build effective mentorship into existing AI safety programs.</p>\n<p>This project is about designing a practical system for developing better mentors in the growing AI safety community. One idea I&#x27;m particularly interested in is a mentor-apprenticeship model, where a senior mentor is paired with a mentor-in-training for one cohort cycle. The trainee would gradually take on more responsibility, eventually taking on their own group in a future cycle and potentially training another mentor themselves. This could potentially be integrated into programs such as MATS, SPAR, maybe even The Catalyst, and other similar programs. However, I&#x27;d want the students to consider different models and develop whichever approach seems most promising.</p>\n<p>During the first two months, students will focus on developing the proposal. This would involve looking at existing work on mentorship, education, skill development, and research training, thinking through what makes mentorship in AI safety particularly difficult and how to tackles these difficults, and designing and comparing different systems for developing mentors. We&#x27;ll also think through how these systems could be tested and evaluated and develop a concrete proposal for how one of them could be implemented in an existing AI safety program. During the final month, we&#x27;ll focus on turning the proposal into something that can be used. Students will reach out to existing AI safety programs, share our findings with them, get their feedback, and ask whether they would be interested in piloting or adopting the proposed mentor-development pipeline.</p>\n<p>This is something I&#x27;m personally very interested in, and I&#x27;d be happy to work closely with the students throughout the project. I&#x27;m looking for people who are curious about how people learn and develop, communicate clearly, and enjoy designing programs and building things. They should also be comfortable reading psychological and educational research and spending quite a lot of time thinking through how mentorship and research skills can be developed. Strong writing skills would be particularly valuable, since the final output will be a detailed proposal that we could potentially publish on LessWrong and the EA Forum and share directly with existing mentorship programs. Having mentored someone before and/or worked on education or training programs would be a huge plus.</p>\n<p>THEORY OF CHANGE</p>\n<p>The number of people entering AI safety is growing, but the number of experienced people who can effectively mentor and develop them is much smaller. This could become a major bottleneck. Even if we successfully attract many talented researchers into the field, they still need people who can help them choose good problems, structure their projects, give useful feedback, develop research judgment and taste, and much more.</p>\n<p>Therefore, the main goal of this project is to design a scalable system for training and developing AI safety mentors. By the end of the program, the goal would be to have a detailed, evidence-informed proposal for a mentor-development system, alongside feedback from existing AI safety programs on whether and how they could actually use it. Ideally, we would also have at least a few programs interested in piloting the pipeline, giving us a path from the initial research and proposal into an actual intervention that could improve mentorship capacity in the field.</p>", "q_html": "<p>For the questions below, please be specific. I&#x27;d much rather see 2-3 well-developed ideas than 5+ underdeveloped ones. Go in-depth where you can, and make your reasoning clear.</p>\n<p>(Q1): Imagine you have 20 experienced AI safety researchers who are already good at research but have very different levels of mentoring experience. How would you design the program so that they improve as mentors? (200 words max)</p>\n<p>(Q2): What do you think is the biggest bottleneck to scaling high-quality mentorship in AI safety? Why do you think this is the bottleneck, and how would you try to address it? (200 words max)</p>\n<p>(Q3): What do you think is the biggest failure mode of a mentor-training program like this? How would you design around it? (200 words max)</p>", "siblings": [{"slug": "ahmed-wez-1", "title": "Navigating the Intelligence Explosion"}, {"slug": "ahmed-wez-3", "title": "Can We Still Tell Who Is Ahead in AI?"}]}, {"slug": "ahmed-wez-3", "mentor": "ahmed-wez", "name": "Ahmed Wez", "org": "MIT AI Alignment / Impact First", "photo": "mentors/ahmed-wez.jpg", "initials": "AW", "bio_html": "<p>I&#x27;m an incoming undergraduate student working on AI safety research and community building. I&#x27;m a fellow at MIT AI Alignment and one of 25 fellows in the Impact First Fellowship.</p>\n<p>On the research side, I started out working on pancreatic cancer modeling, then moved into computer vision for security and weapon detection, followed by ML theory and mathematical reasoning in LLMs, and now I&#x27;m focused on AI safety and AI strategy research. I&#x27;ve published work at several conferences and workshops, and I&#x27;ve peer-reviewed a couple dozen papers on AI safety and ML theory for leading conferences, including NeurIPS.</p>\n<p>On the fieldbuilding side, I direct Nous, a program exploring the philosophy behind AI safety with ~210 participants and an overall rating of 8.5/10, and I&#x27;ve helped organize a couple of hackathons and other events around different areas of AI.</p>", "title": "Can We Still Tell Who Is Ahead in AI?", "summary": "If one actor has a better AI for coding while another has a better AI for planning, who is more capable? Who is in the lead? And what are the consequences for bargaining, deterrence, and strategic stability?", "desc_html": "<p>A lot of work on AI and international security focuses on the uncertainty about what other actors are capable of. But AI systems can be very strong at some tasks yet surprisingly weak at others, meaning that it may not always make sense to say that one system is &quot;more capable&quot; than another. This possibility seems much less explored in work on AI strategy and deterrence.</p>\n<p>This project investigates whether this kind of jagged capability could create problems for AI-era bargaining and deterrence. If two actors have very different strengths, there may be no stable answer to the question of who is more capable overall. This could make it much harder for them to understand each other&#x27;s position, communicate credible threats, predict how a crisis might develop, or judge the consequences of an escalation. The project will distinguish this from ordinary capability uncertainty, where there is a well-defined answer that is just hidden from the other side, which could be addressed through promoting greater transparency and better verification methods.</p>\n<h4>What students will work on</h4>\n<p>Students will start by studying the relevant work on AI capability jaggedness, crisis bargaining, deterrence, multidimensional signaling, and how we measure national power. From there, we&#x27;ll work on formalizing the idea of jagged capability and building a model to understand how it could affect bargaining between two actors.</p>\n<p>We&#x27;ll also look at whether actors can still figure out who is ahead when their AIs are better than each other at completely different things, and whether this creates problems for bargaining.</p>\n<p>Depending on how the project develops, we may also look at real benchmark data from frontier AI systems to see how jagged their capabilities are. We may also run small language-model wargaming experiment(s) where AI agents bargain under different capability conditions.</p>\n<h4>What I&#x27;m looking for</h4>\n<p>I&#x27;m mainly looking for students who are strong in Python and comfortable with mathematical or theoretical work. They should have a good understanding of machine learning and be interested in game theory, AI strategy, international security, and/or related areas. Students who have experience with mathematical modeling, simulations, ML research, and/or AI safety would be a strong fit.</p>\n<p>The project is fairly open-ended, so students should also be comfortable dealing with questions where the answer is unknown and making research decisions without having every step specified in advance. Strong writing skills would be valuable, since the goal is to turn the results into a research paper and potentially a shorter public write-up potentially on LessWrong.</p>\n<h4>Theory of change</h4>\n<p>Measuring AI capabilities are likely to become increasingly important for international security and strategic competition, but we still mostly think about them as something that can be compared on a single scale. If AI systems are strong at very different things, this may become much harder. Two actors might agree that both systems are highly capable while disagreeing about which one has the advantage in a particular situation.</p>\n<p>Understanding this could help us figure out whether jagged AI capabilities create a new source of instability in AI-era bargaining, and what actors could do about it. If we found this to be real, we may need better ways of measuring and communicating AI capabilities, as well as changes to how we think about deterrence, verification, and strategic communication. If it turns out existing approaches are good enough, that would also be a useful result.</p>\n<h4>Expected output</h4>\n<p>By the end of the program, students should have a formalized definition of jagged capability, a working model or simulation of its effects on bargaining, and an analysis of the conditions under which it does or does not create additional instability. Where feasible, they will also have empirical analysis of real AI capability profiles or results from small language-model bargaining experiment(s).</p>\n<p>The main output will be a research paper and/or a LessWrong article developing and testing the core argument, with the possibility of turning the work into a longer project or submitting it to a relevant AI safety, game theory, or security research venue if the results are promising.</p>", "q_html": "<p>For the questions below, please be specific. I&#x27;d much rather see 2-3 well-developed ideas than 5+ underdeveloped ones. Go in-depth where you can, and make your reasoning clear.</p>\n<p>(Q1): Imagine two states have AIs with capability vectors (9,2) and (5,8). How would you determine which state is more capable, and what assumptions would you need to make? (250 words max)</p>\n<p>(Q2): How could you extend a standard crisis-bargaining model to replace a single capability parameter with a multidimensional capability profile? (250 words max)</p>\n<p>(Q3): If you had 10 weeks to investigate this project, what would you try to establish first, and why? (250 words max)</p>", "siblings": [{"slug": "ahmed-wez-1", "title": "Navigating the Intelligence Explosion"}, {"slug": "ahmed-wez-2", "title": "The Mentor Bottleneck"}]}]</script>
+  <script>
+  (() => {
+    const CARDS = JSON.parse(document.getElementById('project-data').textContent);
+    const grid = document.getElementById('grid');
+    const searchEl = document.getElementById('search');
+    const emptyEl = document.getElementById('empty');
+    const statusEl = document.getElementById('status');
+    const backdrop = document.getElementById('backdrop');
+    const modal = document.getElementById('modal');
+    let query = '', view = [], current = -1;
+
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const hl = s => {
+      const e = esc(s);
+      if (!query) return e;
+      const rx = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+      return e.replace(rx, '<mark>$1</mark>');
+    };
+    const avatar = c => c.photo
+      ? `<img class="avatar" src="${c.photo}" alt="" loading="lazy" width="480" height="480">`
+      : `<div class="avatar">${esc(c.initials)}</div>`;
+
+    const matches = c => !query || (c.name + ' ' + c.org + ' ' + c.title + ' ' +
+      c.summary + ' ' + c.desc_html).toLowerCase().includes(query);
+
+    function render() {
+      view = CARDS.map((c, i) => i).filter(i => matches(CARDS[i]));
+      statusEl.textContent = view.length === CARDS.length
+        ? `Showing all ${CARDS.length} projects`
+        : `Showing ${view.length} of ${CARDS.length} projects`;
+      emptyEl.hidden = view.length > 0;
+      emptyEl.textContent = `Nothing matches "${query}". Try fewer or shorter words.`;
+      grid.innerHTML = view.map(i => {
+        const c = CARDS[i];
+        return `
+        <article class="card">
+          <a class="card__link" href="#${c.slug}" data-i="${i}" aria-label="${esc(c.title)}"></a>
+          <div class="card__top">
+            ${avatar(c)}
+            <div>
+              <div class="card__name">${hl(c.name)}</div>
+              <div class="card__org">${hl(c.org)}</div>
+            </div>
+          </div>
+          <div>
+            <div class="card__ptitle">${hl(c.title)}</div>
+            ${c.summary ? `<div class="card__psum">${hl(c.summary)}</div>` : ''}
+          </div>
+        </article>`;
+      }).join('');
+      grid.querySelectorAll('.card__link').forEach(a => a.onclick = e => {
+        e.preventDefault(); open(+a.dataset.i);
+      });
+    }
+
+    function syncURL(push) {
+      const p = new URLSearchParams();
+      if (query) p.set('q', query);
+      const qs = p.toString();
+      const url = location.pathname + (qs ? '?' + qs : '') +
+                  (current >= 0 ? '#' + CARDS[current].slug : '');
+      history[push ? 'pushState' : 'replaceState']({}, '', url);
+    }
+    function readURL() {
+      const p = new URLSearchParams(location.search);
+      query = (p.get('q') || '').toLowerCase();
+      searchEl.value = p.get('q') || '';
+      render();
+      const i = CARDS.findIndex(c => c.slug === location.hash.slice(1));
+      if (i >= 0) open(i, true); else close(true);
+    }
+
+    function open(i, silent) {
+      const c = CARDS[i];
+      current = i;
+      const pos = view.indexOf(i);
+      modal.innerHTML = `
+        <div class="modal__head">
+          ${avatar(c)}
+          <div>
+            <div class="modal__name">${esc(c.name)}</div>
+            <div class="modal__org">${esc(c.org)}</div>
+          </div>
+          <div class="mnav">
+            <button id="prevBtn" aria-label="Previous project" ${pos <= 0 ? 'disabled' : ''}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+            <button id="nextBtn" aria-label="Next project" ${pos < 0 || pos >= view.length - 1 ? 'disabled' : ''}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+            <button class="close" id="closeBtn" aria-label="Close">×</button>
+          </div>
+        </div>
+        <div class="modal__body">
+          <h2 class="modal__title" id="modalTitle">${esc(c.title)}</h2>
+          ${c.summary ? `<p class="modal__lead">${esc(c.summary)}</p>` : ''}
+          <div class="prose">${c.desc_html}</div>
+          ${c.q_html ? `<div class="qbox"><div class="modal__label">Application question</div><div class="prose">${c.q_html}</div></div>` : ''}
+          ${c.siblings.length ? `
+            <div class="section">
+              <div class="modal__label">More from ${esc(c.name)}</div>
+              <div class="more-list">
+                ${c.siblings.map(s => `<a href="#${s.slug}" data-slug="${s.slug}">${esc(s.title)}</a>`).join('')}
+              </div>
+            </div>` : ''}
+          ${c.bio_html ? `
+            <div class="section">
+              <div class="modal__label">About the mentor</div>
+              <div class="prose">${c.bio_html}</div>
+            </div>` : ''}
+        </div>`;
+      backdrop.classList.add('open');
+      backdrop.scrollTop = 0;
+      document.body.style.overflow = 'hidden';
+      modal.querySelector('#closeBtn').onclick = () => close();
+      modal.querySelector('#prevBtn').onclick = () => step(-1);
+      modal.querySelector('#nextBtn').onclick = () => step(1);
+      modal.querySelectorAll('.more-list a').forEach(a => a.onclick = e => {
+        e.preventDefault();
+        const j = CARDS.findIndex(x => x.slug === a.dataset.slug);
+        if (j >= 0) open(j);
+      });
+      modal.querySelector('#closeBtn').focus();
+      if (!silent) syncURL(true);
+    }
+
+    function step(d) {
+      const n = view[view.indexOf(current) + d];
+      if (n !== undefined) open(n);
+    }
+    function close(silent) {
+      backdrop.classList.remove('open');
+      document.body.style.overflow = '';
+      current = -1;
+      if (!silent) syncURL(true);
+    }
+
+    backdrop.onclick = e => { if (e.target === backdrop) close(); };
+    document.addEventListener('keydown', e => {
+      if (!backdrop.classList.contains('open')) return;
+      if (e.key === 'Escape') close();
+      else if (e.key === 'ArrowLeft') step(-1);
+      else if (e.key === 'ArrowRight') step(1);
+    });
+    let t;
+    searchEl.oninput = e => {
+      clearTimeout(t);
+      t = setTimeout(() => { query = e.target.value.trim().toLowerCase(); render(); syncURL(); }, 200);
+    };
+    window.addEventListener('popstate', readURL);
+    readURL();
+  })();
+  </script>
+
+  <!-- ===== Solidify nav once page text would scroll beneath it ===== -->
+  <script>
+    (function () {
+      const nav = document.querySelector('.nav')
+      const firstText = document.querySelector('.hero__title, .page-head h1')
+      let trigger = 0
+      function calc() {
+        trigger = Math.max(0, firstText.getBoundingClientRect().top + window.scrollY - nav.offsetHeight - 8)
+      }
+      function onScroll() {
+        const on = window.scrollY > trigger
+        nav.classList.toggle('is-scrolled', on)
+        window.__navBgVisible = on
+      }
+      calc(); onScroll()
+      window.addEventListener('scroll', onScroll, { passive: true })
+      window.addEventListener('resize', () => { calc(); onScroll() })
+    })()
+  </script>
+  <!-- ===== Particle field script (copied verbatim from the demo) ===== -->
+  <script>
+    const canvas = document.getElementById('particles')
+    const ctx = canvas.getContext('2d')
+    const navCanvas = document.getElementById('navParticles')
+    const navCtx = navCanvas.getContext('2d')
+    const navEl = document.querySelector('.nav')
+    let navStripH = 102
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    let isMobile = window.innerWidth <= 768
+    let scale = Math.min(1, Math.max(0.5, Math.min(window.innerWidth, window.innerHeight) / 1000))
+
+    // SoA particle data
+    let maxN = 128, count = 0
+    let px = new Float32Array(maxN), py = new Float32Array(maxN)
+    let pvx = new Float32Array(maxN), pvy = new Float32Array(maxN)
+    let pr = new Float32Array(maxN), pnc = new Uint16Array(maxN)
+
+    let lineBuf = new Float32Array(4096), lineCount = 0
+
+    let gCols, gRows, gCounts, gOffsets, gIndices, gPos
+
+    function resize() {
+      canvas.width = window.innerWidth * dpr
+      canvas.height = window.innerHeight * dpr
+      canvas.style.width = window.innerWidth + 'px'
+      canvas.style.height = window.innerHeight + 'px'
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      // the nav window only reveals the top strip of the field — mirror
+      // just that strip instead of the whole viewport canvas
+      navStripH = (navEl ? navEl.offsetHeight + 2 : 102)
+      navCanvas.width = canvas.width
+      navCanvas.height = Math.ceil(navStripH * dpr)
+      navCanvas.style.width = window.innerWidth + 'px'
+      navCanvas.style.height = navStripH + 'px'
+    }
+    resize()
+    window.addEventListener('resize', () => {
+      isMobile = window.innerWidth <= 768
+      scale = Math.min(1, Math.max(0.5, Math.min(window.innerWidth, window.innerHeight) / 1000))
+      resize()
+    })
+
+    function grow() {
+      const m = maxN * 2
+      const cf = a => { const b = new Float32Array(m); b.set(a); return b }
+      const cu = a => { const b = new Uint16Array(m); b.set(a); return b }
+      px = cf(px); py = cf(py); pvx = cf(pvx); pvy = cf(pvy)
+      pr = cf(pr); pnc = cu(pnc)
+      maxN = m
+    }
+
+    function addParticle(x, y) {
+      if (count >= maxN) grow()
+      const i = count++
+      px[i] = x ?? Math.random() * window.innerWidth
+      py[i] = y ?? Math.random() * window.innerHeight
+      pvx[i] = (Math.random() - 0.5) * 0.5 * scale
+      pvy[i] = (Math.random() - 0.5) * 0.5 * scale
+      pr[i] = (Math.random() * 2.5 + 1) * scale
+      pnc[i] = 0
+    }
+
+    // Carry the field across page navigations so it isn't reset when a
+    // visitor moves between the home page and the project listing.
+    const FIELD_KEY = 'catalyst_field'
+    const FIELD_CAP = 600
+
+    function saveField() {
+      try {
+        const n = Math.min(count, FIELD_CAP)
+        const r1 = v => Math.round(v * 10) / 10
+        const r3 = v => Math.round(v * 1000) / 1000
+        sessionStorage.setItem(FIELD_KEY, JSON.stringify({
+          w: window.innerWidth, h: window.innerHeight, n,
+          x: Array.from(px.subarray(0, n), r1), y: Array.from(py.subarray(0, n), r1),
+          vx: Array.from(pvx.subarray(0, n), r3), vy: Array.from(pvy.subarray(0, n), r3),
+          r: Array.from(pr.subarray(0, n), r3)
+        }))
+      } catch (e) { /* storage unavailable or full — fall back to a fresh field */ }
+    }
+
+    function restoreField() {
+      try {
+        const s = JSON.parse(sessionStorage.getItem(FIELD_KEY) || 'null')
+        if (!s || !s.n) return false
+        // rescale positions if the viewport changed between pages
+        const kx = window.innerWidth / (s.w || window.innerWidth)
+        const ky = window.innerHeight / (s.h || window.innerHeight)
+        for (let i = 0; i < s.n; i++) {
+          if (count >= maxN) grow()
+          const j = count++
+          px[j] = s.x[i] * kx; py[j] = s.y[i] * ky
+          pvx[j] = s.vx[i]; pvy[j] = s.vy[i]
+          pr[j] = s.r[i]; pnc[j] = 0
+        }
+        return count > 0
+      } catch (e) { return false }
+    }
+
+    if (!restoreField()) {
+      const startCount = isMobile ? 5 : 8
+      for (let i = 0; i < startCount; i++) addParticle()
+    }
+    window.addEventListener('pagehide', saveField)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') saveField()
+    })
+
+    const countEl = document.getElementById('count')
+    const footerCountEl = document.getElementById('particleCount')
+    function updateCount() {
+      countEl.textContent = count + ' particles'
+      if (footerCountEl) footerCountEl.textContent = count
+    }
+    updateCount()
+
+    // text stays selectable, but pointer-downs on non-text areas (the
+    // particle-add surface) must not initiate a selection highlight —
+    // tested against actual glyph rects, since text containers (grid rows,
+    // list items) can stretch far wider than the words they hold
+    function hitsText(x, y) {
+      let node = null
+      if (document.caretRangeFromPoint) {
+        const r = document.caretRangeFromPoint(x, y)
+        node = r && r.startContainer
+      } else if (document.caretPositionFromPoint) {
+        const p = document.caretPositionFromPoint(x, y)
+        node = p && p.offsetNode
+      }
+      if (!node || node.nodeType !== 3) return false
+      const range = document.createRange()
+      range.selectNodeContents(node)
+      for (const rect of range.getClientRects()) {
+        if (x >= rect.left - 3 && x <= rect.right + 3 && y >= rect.top - 3 && y <= rect.bottom + 3) return true
+      }
+      return false
+    }
+    window.addEventListener('mousedown', e => {
+      if (e.target === document.documentElement) return
+      if (e.target.closest('a, button, input')) return
+      if (!hitsText(e.clientX, e.clientY)) e.preventDefault()
+    })
+    window.addEventListener('contextmenu', e => {
+      if (e.target.closest('a, button, input')) return
+      if (String(window.getSelection()) !== '') return
+      if (!hitsText(e.clientX, e.clientY)) e.preventDefault()
+    })
+    window.addEventListener('pointerdown', e => {
+      addParticle(e.clientX, e.clientY); updateCount()
+    })
+
+    function buildGrid(w, h, cell) {
+      gCols = Math.ceil(w / cell) || 1
+      gRows = Math.ceil(h / cell) || 1
+      const nc = gCols * gRows
+      if (!gCounts || gCounts.length < nc) {
+        gCounts = new Uint16Array(nc)
+        gOffsets = new Uint32Array(nc + 1)
+        gPos = new Uint32Array(nc)
+      }
+      if (!gIndices || gIndices.length < count) gIndices = new Uint32Array(Math.max(count, 64))
+      gCounts.fill(0)
+      for (let i = 0; i < count; i++) {
+        const c = Math.max(0, Math.min((px[i] / cell) | 0, gCols - 1))
+        const r = Math.max(0, Math.min((py[i] / cell) | 0, gRows - 1))
+        gCounts[r * gCols + c]++
+      }
+      gOffsets[0] = 0
+      for (let i = 0; i < nc; i++) gOffsets[i + 1] = gOffsets[i] + gCounts[i]
+      for (let i = 0; i < nc; i++) gPos[i] = gOffsets[i]
+      for (let i = 0; i < count; i++) {
+        const c = Math.max(0, Math.min((px[i] / cell) | 0, gCols - 1))
+        const r = Math.max(0, Math.min((py[i] / cell) | 0, gRows - 1))
+        const k = r * gCols + c
+        gIndices[gPos[k]++] = i
+      }
+    }
+
+    function pushLine(x1, y1, x2, y2) {
+      const idx = lineCount * 4
+      if (idx + 4 > lineBuf.length) {
+        const next = new Float32Array(lineBuf.length * 2)
+        next.set(lineBuf)
+        lineBuf = next
+      }
+      lineBuf[idx] = x1; lineBuf[idx+1] = y1; lineBuf[idx+2] = x2; lineBuf[idx+3] = y2
+      lineCount++
+    }
+
+    function animate() {
+      const w = window.innerWidth, h = window.innerHeight, n = count
+      ctx.clearRect(0, 0, w, h)
+
+      const s = scale, s2 = s * s
+      const ND = 160 * s, NDSq = 25600 * s2, SD = 40 * s, SDSq = 1600 * s2
+      const CRSq = 6400 * s2, CR = 80 * s, CT = 25
+      // shrink the connection radius as particles are added so line
+      // rasterization stays bounded (cost otherwise grows ~quadratically)
+      const LDSq = 16900 * s2 * (n > 120 ? Math.max(0.35, 120 / n) : 1)
+      const drawLines = true
+
+      for (let i = 0; i < n; i++) pnc[i] = 0
+      lineCount = 0
+
+      buildGrid(w, h, ND)
+
+      for (let r = 0; r < gRows; r++) {
+        for (let c = 0; c < gCols; c++) {
+          const cellA = r * gCols + c, sA = gOffsets[cellA], eA = gOffsets[cellA + 1]
+          if (sA === eA) continue
+
+          for (let ai = sA; ai < eA; ai++) {
+            const ii = gIndices[ai], ix = px[ii], iy = py[ii]
+            for (let bi = ai + 1; bi < eA; bi++) {
+              const ji = gIndices[bi]
+              const dx = ix - px[ji], dy = iy - py[ji]
+              const distSq = dx * dx + dy * dy
+              if (distSq < CRSq && distSq > 0) { pnc[ii]++; pnc[ji]++ }
+              if (distSq >= NDSq || distSq === 0) continue
+              const dist = Math.sqrt(distSq)
+              if (distSq < SDSq) { const f = ((SD - dist) / SD) * 0.015 * s, fx = (dx / dist) * f, fy = (dy / dist) * f; pvx[ii] += fx; pvy[ii] += fy; pvx[ji] -= fx; pvy[ji] -= fy }
+              else { const f = 0.0008 * s, fx = (dx / dist) * f, fy = (dy / dist) * f; pvx[ii] -= fx; pvy[ii] -= fy; pvx[ji] += fx; pvy[ji] += fy }
+              if (drawLines && distSq < LDSq) pushLine(ix, iy, px[ji], py[ji])
+            }
+          }
+
+          const nb = [c+1,r, c-1,r+1, c,r+1, c+1,r+1]
+          for (let d = 0; d < 8; d += 2) {
+            const nc2 = nb[d], nr2 = nb[d+1]
+            if (nc2 < 0 || nc2 >= gCols || nr2 < 0 || nr2 >= gRows) continue
+            const cellB = nr2 * gCols + nc2, sB = gOffsets[cellB], eB = gOffsets[cellB + 1]
+            if (sB === eB) continue
+            for (let ai = sA; ai < eA; ai++) {
+              const ii = gIndices[ai], ix = px[ii], iy = py[ii]
+              for (let bi = sB; bi < eB; bi++) {
+                const ji = gIndices[bi]
+                const dx = ix - px[ji], dy = iy - py[ji]
+                const distSq = dx * dx + dy * dy
+                if (distSq < CRSq && distSq > 0) { pnc[ii]++; pnc[ji]++ }
+                if (distSq >= NDSq || distSq === 0) continue
+                const dist = Math.sqrt(distSq)
+                if (distSq < SDSq) { const f = ((SD - dist) / SD) * 0.015, fx = (dx / dist) * f, fy = (dy / dist) * f; pvx[ii] += fx; pvy[ii] += fy; pvx[ji] -= fx; pvy[ji] -= fy }
+                else { const fx = (dx / dist) * 0.0008, fy = (dy / dist) * 0.0008; pvx[ii] -= fx; pvy[ii] -= fy; pvx[ji] += fx; pvy[ji] += fy }
+                if (drawLines && distSq < LDSq) pushLine(ix, iy, px[ji], py[ji])
+              }
+            }
+          }
+        }
+      }
+
+      // Clump buster
+      let worstIdx = -1, worstCount = 0
+      for (let i = 0; i < n; i++) { if (pnc[i] > worstCount) { worstCount = pnc[i]; worstIdx = i } }
+      if (worstCount >= CT && worstIdx >= 0) {
+        const cx = px[worstIdx], cy = py[worstIdx]
+        for (let i = 0; i < n; i++) {
+          const dx = px[i] - cx, dy = py[i] - cy, dSq = dx * dx + dy * dy
+          if (dSq < CRSq && dSq > 0) { const d = Math.sqrt(dSq), str = (16 + (1 - d / CR) * 20) * s; pvx[i] = (dx / d) * str; pvy[i] = (dy / d) * str }
+        }
+        const a = Math.random() * Math.PI * 2; pvx[worstIdx] = Math.cos(a) * 24 * s; pvy[worstIdx] = Math.sin(a) * 24 * s
+      }
+
+      // Draw lines
+      if (drawLines && lineCount > 0) {
+        ctx.beginPath()
+        for (let i = 0; i < lineCount; i++) { const o = i * 4; ctx.moveTo(lineBuf[o], lineBuf[o+1]); ctx.lineTo(lineBuf[o+2], lineBuf[o+3]) }
+        ctx.strokeStyle = 'rgba(20,184,166,0.12)'; ctx.lineWidth = 1; ctx.stroke()
+      }
+
+      // Update and draw particles
+      ctx.beginPath()
+      for (let i = 0; i < n; i++) {
+        pvx[i] += (Math.random() - 0.5) * 0.02 * s; pvy[i] += (Math.random() - 0.5) * 0.02 * s
+        const ss = pvx[i] * pvx[i] + pvy[i] * pvy[i]
+        const damp = ss > 4 * s2 ? 0.94 : 0.985
+        pvx[i] *= damp; pvy[i] *= damp
+        px[i] += pvx[i]; py[i] += pvy[i]
+        if (px[i] < 0) px[i] = w; if (px[i] > w) px[i] = 0
+        if (py[i] < 0) py[i] = h; if (py[i] > h) py[i] = 0
+        ctx.moveTo(px[i] + pr[i], py[i]); ctx.arc(px[i], py[i], pr[i], 0, Math.PI * 2)
+      }
+      ctx.fillStyle = 'rgba(20,184,166,0.45)'; ctx.fill()
+
+      // Mirror the particle layer into the nav's clipped copy (1:1 device
+      // pixels) — but only while the nav background is actually shown
+      if (window.__navBgVisible) {
+        navCtx.clearRect(0, 0, navCanvas.width, navCanvas.height)
+        navCtx.drawImage(canvas, 0, 0, navCanvas.width, navCanvas.height, 0, 0, navCanvas.width, navCanvas.height)
+      }
+
+      requestAnimationFrame(animate)
+    }
+    requestAnimationFrame(animate)
+  </script>
+</body>
+</html>
