@@ -1,5 +1,21 @@
 [
  {
+  "name": "Polina Povarova",
+  "org": "FarmKind",
+  "bio": "Executive Director at FarmKind, a donation platform for farmed animal welfare. Before joining FarmKind in 2025 as Head of Growth, Polina was scaling startups in various roles (growth, product, design).",
+  "projects": [
+   {
+    "title": "Examining What Actually Works in Getting People to Act",
+    "summary": "A review of the research on what actually gets people to take action, focused on how good the evidence really is. Students will produce a list of the findings that hold up, separating well-evidenced techniques from those that were never properly tested or failed to replicate.",
+    "description": "FarmKind is a donation platform funding high-impact farmed animal charities. We're always looking for ways to improve how we ask people to give, and published research is a good source of ideas that could work faster than testing everything ourselves.  \n  \nThe problem is that research quality varies a lot. Plenty of widely-cited findings come from small studies, hypothetical stakes, or results nobody ever re-tested.  \n  \nThe project is to sort through this and produce a list of what actually holds up: interventions shown to get people to take action — donating, signing up, committing, volunteering — where the evidence is genuinely solid. Students would gather the research, judge how well each study was done, and check whether the finding was replicated, contradicted, or never tested again. Starting with charitable giving, and widening to behavior change more broadly if there's time.  \n  \nIf students want to go further and suggest how any of it might apply to the way our site currently works, we'd be glad to read it, but that's entirely optional.  \n  \nExperience: no specialist background needed. You should be comfortable reading academic papers and understand basic statistics like sample size and effect size.  \n  \nEvery improvement we make brings more money to charities that reduce farmed animal suffering. They're extremely cost-effective, so small gains in fundraising add up to large numbers of animals spared. Having a list of techniques that have already held up will get us there much faster.",
+    "question": "Pick any technique that's widely recommended for getting people to donate, sign up, or take some other action. Find what you think is the strongest piece of evidence behind it, and tell us how much you'd trust it.\n\nWe're less interested in a summary of the study than in your judgement of it. If there's something you couldn't establish, say so. That's genuinely useful to know, not a gap in your answer."
+   }
+  ],
+  "slug": "polina-povarova",
+  "initials": "PP",
+  "photo": "mentors/polina-povarova.jpg"
+ },
+ {
   "name": "Roman Ross",
   "org": "Effective Altruism Purdue",
   "bio": "Roman primarily spends his time fieldbuilding for AI safety, whether this be by running clubs, mentoring people, or completing miscellaneous projects. In the past, he has participated in the Generator Residency through Kairos, contracted as an operations lead for BlueDot's Incubator week, and mentored other fieldbuilding projects through SPAR.",
