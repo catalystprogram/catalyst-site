@@ -159,7 +159,7 @@ PAGE = f"""<!DOCTYPE html>
     /* flat entries separated by rules — no card fill, border box or radius */
     .grid {{
       display: grid; column-gap: 46px; row-gap: 34px;
-      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(310px, 100%), 1fr));
       padding-bottom: 80px;
     }}
     .card {{
