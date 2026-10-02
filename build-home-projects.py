@@ -54,11 +54,6 @@ SECTION = f"""    <section class="section" id="projects">
       <div class="container">
         <div class="section__header">
           <h2 class="section__title">Projects this term</h2>
-          <p class="section__desc">
-            <a class="plink" href="https://forms.fillout.com/t/5hBi1ayhj8us" target="_blank" rel="noopener noreferrer">Apply here</a>
-            to be a student mentee on one of these projects. Applications are due
-            September&nbsp;14th, AoE.
-          </p>
         </div>
         <div class="pgrid">
 {cards}
@@ -105,8 +100,6 @@ CSS = """
       font-size: 14px; color: var(--text-dim); line-height: 1.5; margin-top: 8px;
       display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
     }
-    .section__desc .plink { color: var(--teal); font-weight: 600; }
-    .section__desc .plink:hover { text-decoration: underline; }
     .pall {
       display: inline-block; margin-top: 44px;
       font-size: 15px; font-weight: 600; color: var(--teal);
